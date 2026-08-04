@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% comment %}
+  O LoginView procura este arquivo neste caminho exato:
+  templates/registration/login.html
+
+  A pasta e "registration" mesmo, independente do prefixo que voce escolheu
+  na URL (aqui usamos /contas/). Errar isso e o tropeco numero 1.
+{% endcomment %}
+
+{% block titulo %}Entrar - Controle de Gastos{% endblock %}
+
+{% block conteudo %}
+
+<div class="caixa-login">
+  <h1>Entrar</h1>
+  <p class="subtitulo">Use o mesmo usuario e senha do painel administrativo.</p>
+
+  <form method="post">
+    {% csrf_token %}
+
+    {% for erro in form.non_field_errors %}
+      <div class="mensagem error">{{ erro }}</div>
+    {% endfor %}
+
+    {% include 'gastos/_form_campos.html' %}
+
+    {# Preserva o ?next=... : depois de entrar, volta para a pagina pedida. #}
+    <input type="hidden" name="next" value="{{ next }}">
+
+    <button type="submit" class="botao botao-primario botao-largo">Entrar</button>
+  </form>
+</div>
+
+{% endblock %}

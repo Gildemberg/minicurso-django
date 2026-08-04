@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block titulo %}Gastos - Controle de Gastos{% endblock %}
+
+{% block conteudo %}
+
+{# O botao "+ Novo gasto" vive no menu lateral, entao nao se repete aqui. #}
+<div class="cabecalho-pagina">
+  <div>
+    <h1>Gastos</h1>
+    <p class="subtitulo">{{ gastos|length }} lancamento{{ gastos|length|pluralize }} encontrado{{ gastos|length|pluralize }}.</p>
+  </div>
+</div>
+
+<div class="card">
+  {# method="get" faz os filtros virarem parametros na URL - da para compartilhar o link. #}
+  <form method="get" class="filtros">
+    <div class="campo">
+      <label for="busca">Buscar</label>
+      <input type="search" id="busca" name="busca" value="{{ busca }}" placeholder="Descricao...">
+    </div>
+
+    <div class="campo">
+      <label for="categoria">Categoria</label>
+      <select id="categoria" name="categoria">
+        <option value="">Todas</option>
+        {% for categoria in categorias %}
+          {# O `stringformat:"s"` converte o id em texto para comparar com o valor da URL. #}
+          <option value="{{ categoria.id }}"
+            {% if categoria.id|stringformat:"s" == categoria_id %}selected{% endif %}>
+            {{ categoria.nome }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="campo">
+      <label for="mes">Mes</label>
+      <input type="month" id="mes" name="mes" value="{{ mes_input }}">
+    </div>
+
+    <button type="submit" class="botao">Filtrar</button>
+    <a class="botao" href="{% url 'gastos:gasto_lista' %}">Limpar</a>
+  </form>
+</div>
+
+<div class="card">
+  <table class="tabela">
+    <thead>
+      <tr>
+        <th>Data</th>
+        <th>Descricao</th>
+        <th>Categoria</th>
+        <th class="num">Valor</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for gasto in gastos %}
+        <tr>
+          <td class="num">{{ gasto.data|date:"d/m/Y" }}</td>
+          <td>
+            {{ gasto.descricao }}
+            {% if gasto.observacao %}<div class="subtitulo">{{ gasto.observacao|truncatechars:60 }}</div>{% endif %}
+          </td>
+          <td>
+            <span class="pilula">
+              <span class="marcador" style="background: {{ gasto.categoria.cor }}"></span>
+              {{ gasto.categoria.nome }}
+            </span>
+          </td>
+          <td class="num">R$ {{ gasto.valor|floatformat:2 }}</td>
+          <td class="acoes">
+            <a href="{% url 'gastos:gasto_editar' gasto.pk %}">Editar</a>
+            <a class="excluir" href="{% url 'gastos:gasto_excluir' gasto.pk %}">Excluir</a>
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="5" class="vazio">Nenhum gasto encontrado com esses filtros.</td></tr>
+      {% endfor %}
+    </tbody>
+    {% if gastos %}
+      <tfoot>
+        <tr>
+          <td colspan="3">Total</td>
+          <td class="num">R$ {{ total|floatformat:2 }}</td>
+          <td></td>
+        </tr>
+      </tfoot>
+    {% endif %}
+  </table>
+</div>
+
+{% endblock %}

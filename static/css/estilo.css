@@ -1,0 +1,447 @@
+/* ==========================================================================
+   Controle de Gastos - folha de estilo unica
+   Sem framework, sem build: e so CSS puro.
+   ========================================================================== */
+
+/* 1. Tokens de cor -------------------------------------------------------- */
+:root {
+  --plano:            #f9f9f7;  /* fundo da pagina */
+  --superficie:       #fcfcfb;  /* fundo dos cards */
+  --tinta:            #0b0b0b;  /* texto principal */
+  --tinta-2:          #52514e;  /* texto secundario */
+  --tinta-3:          #898781;  /* rotulos, legendas */
+  --linha:            #e1e0d9;  /* divisorias */
+  --borda:            rgba(11, 11, 11, 0.10);
+  --trilho:           #ecebe5;  /* fundo das barras */
+
+  --acento:           #2a78d6;  /* bordas e foco */
+  --link:             #256abf;  /* texto de link (precisa de mais contraste) */
+  --botao:            #1c5cab;  /* fundo de botao com texto branco */
+  --botao-hover:      #184f95;
+  --sucesso:          #0ca30c;
+  --erro:             #d03b3b;
+  --erro-tinta:       #a02020;
+
+  --raio:             10px;
+  --sombra:           0 1px 2px rgba(11, 11, 11, 0.04);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --plano:          #0d0d0d;
+    --superficie:     #1a1a19;
+    --tinta:          #ffffff;
+    --tinta-2:        #c3c2b7;
+    --tinta-3:        #898781;
+    --linha:          #2c2c2a;
+    --borda:          rgba(255, 255, 255, 0.10);
+    --trilho:         #2c2c2a;
+
+    --acento:         #3987e5;
+    --link:           #6da7ec;
+    --botao:          #2a78d6;
+    --botao-hover:    #1c5cab;
+    --erro:           #e66767;
+    --erro-tinta:     #e66767;
+  }
+}
+
+/* 2. Base ----------------------------------------------------------------- */
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--plano);
+  color: var(--tinta);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+a { color: var(--link); }
+
+h1 { font-size: 24px; font-weight: 600; margin: 0; }
+h2 { font-size: 17px; font-weight: 600; margin: 0 0 16px; }
+
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* 3. Menu lateral ---------------------------------------------------------- */
+/* A lateral e `fixed`: ela fica parada enquanto o conteudo rola. O respiro
+   para ela vem do `margin-left` em .conteudo, mais abaixo. */
+.lateral {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 232px;
+  padding: 22px 16px;
+  background: var(--superficie);
+  border-right: 1px solid var(--linha);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  overflow-y: auto;
+}
+
+.marca {
+  font-weight: 600;
+  color: var(--tinta);
+  text-decoration: none;
+  padding: 0 8px;
+}
+
+.lateral nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.lateral nav a {
+  display: block;
+  padding: 8px 12px;
+  border-radius: 8px;
+  color: var(--tinta-2);
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.lateral nav a:hover {
+  background: var(--plano);
+  color: var(--tinta);
+}
+
+/* O item ativo ganha fundo e uma barra de 2px na borda esquerda. */
+.lateral nav a.ativo {
+  background: var(--plano);
+  color: var(--tinta);
+  font-weight: 500;
+  box-shadow: inset 2px 0 0 var(--acento);
+}
+
+/* `margin-top: auto` empurra o rodape para o fim da coluna. */
+.lateral-rodape {
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid var(--linha);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Area de conteudo, ao lado da barra. */
+.conteudo { padding: 28px 0; }
+.com-menu .conteudo { margin-left: 232px; }
+
+/* 4. Cards e cabecalho de pagina ------------------------------------------ */
+.card {
+  background: var(--superficie);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  box-shadow: var(--sombra);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.cabecalho-pagina {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.subtitulo {
+  color: var(--tinta-3);
+  font-size: 13px;
+  margin: 4px 0 0;
+}
+
+/* 5. Botoes --------------------------------------------------------------- */
+.botao {
+  display: inline-block;
+  padding: 8px 14px;
+  border: 1px solid var(--borda);
+  border-radius: 8px;
+  background: var(--superficie);
+  color: var(--tinta);
+  font-size: 14px;
+  font-family: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.botao:hover { border-color: var(--tinta-3); }
+
+.botao-primario {
+  background: var(--botao);
+  border-color: var(--botao);
+  color: #fff;
+}
+
+.botao-primario:hover { background: var(--botao-hover); border-color: var(--botao-hover); }
+
+.botao-perigo {
+  background: var(--erro);
+  border-color: var(--erro);
+  color: #fff;
+}
+
+.botao-pequeno { padding: 4px 10px; font-size: 13px; }
+.botao-largo { width: 100%; text-align: center; margin-top: 4px; }
+
+/* 5.1 Identificacao do usuario no rodape da lateral ----------------------- */
+.usuario-nome {
+  font-size: 13px;
+  color: var(--tinta-2);
+  margin-right: auto;
+  overflow: hidden;
+  text-overflow: ellipsis;   /* nome comprido nao empurra o botao Sair */
+  white-space: nowrap;
+}
+
+.lateral-rodape form { margin: 0; }
+
+/* 5.2 Tela de login ------------------------------------------------------- */
+.caixa-login {
+  max-width: 380px;
+  margin: 48px auto;
+  background: var(--superficie);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  box-shadow: var(--sombra);
+  padding: 28px;
+}
+
+.caixa-login h1 { font-size: 20px; }
+.caixa-login .subtitulo { margin-bottom: 22px; }
+
+/* 6. Mensagens (django.contrib.messages) ---------------------------------- */
+.mensagem {
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  border: 1px solid var(--borda);
+  background: var(--superficie);
+}
+
+.mensagem.success { border-left: 3px solid var(--sucesso); }
+.mensagem.error   { border-left: 3px solid var(--erro); color: var(--erro-tinta); }
+
+/* 7. Formularios ---------------------------------------------------------- */
+.campo { margin-bottom: 16px; }
+
+.campo label {
+  display: block;
+  font-size: 13px;
+  color: var(--tinta-2);
+  margin-bottom: 5px;
+}
+
+.campo input,
+.campo select,
+.campo textarea {
+  width: 100%;
+  padding: 9px 11px;
+  border: 1px solid var(--linha);
+  border-radius: 8px;
+  background: var(--plano);
+  color: var(--tinta);
+  font-size: 15px;
+  font-family: inherit;
+}
+
+.campo input:focus,
+.campo select:focus,
+.campo textarea:focus {
+  outline: 2px solid var(--acento);
+  outline-offset: -1px;
+  border-color: transparent;
+}
+
+.campo .erro { color: var(--erro-tinta); font-size: 13px; margin-top: 5px; }
+.campo .ajuda { color: var(--tinta-3); font-size: 12px; margin-top: 4px; }
+
+.acoes-form {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--linha);
+}
+
+/* Barra de filtros: tudo em uma linha acima do conteudo. */
+.filtros {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.filtros .campo { margin-bottom: 0; }
+.filtros input, .filtros select { width: auto; min-width: 150px; }
+
+/* 8. Stat tiles (os numeros do topo do dashboard) -------------------------- */
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.tile {
+  background: var(--superficie);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  box-shadow: var(--sombra);
+  padding: 16px 18px;
+}
+
+.tile-rotulo {
+  font-size: 12px;
+  color: var(--tinta-3);
+  margin-bottom: 6px;
+}
+
+.tile-valor { font-size: 22px; font-weight: 600; }
+
+/* Numero-heroi: so um por tela. */
+.tile-destaque { grid-column: span 2; }
+.tile-destaque .tile-valor { font-size: 44px; line-height: 1.1; letter-spacing: -0.02em; }
+.tile-detalhe { font-size: 12px; color: var(--tinta-3); margin-top: 6px; }
+
+/* 9. Barras por categoria ------------------------------------------------- */
+.barra-linha { margin-bottom: 16px; }
+.barra-linha:last-child { margin-bottom: 0; }
+
+.barra-topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 6px;
+  font-size: 14px;
+}
+
+.barra-nome { display: flex; align-items: center; gap: 8px; color: var(--tinta); }
+
+.marcador {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.barra-valor { color: var(--tinta); font-variant-numeric: tabular-nums; }
+.barra-percentual { color: var(--tinta-3); font-size: 13px; margin-left: 8px; }
+
+.barra-trilho {
+  height: 10px;
+  background: var(--trilho);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+/* Ponta arredondada do lado do dado, reta na linha de base (esquerda). */
+.barra-preenchimento {
+  height: 100%;
+  border-radius: 0 4px 4px 0;
+  min-width: 3px;
+}
+
+/* 10. Tabelas ------------------------------------------------------------- */
+.tabela { width: 100%; border-collapse: collapse; font-size: 14px; }
+
+.tabela th {
+  text-align: left;
+  font-weight: 500;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--tinta-3);
+  padding: 0 10px 8px;
+  border-bottom: 1px solid var(--linha);
+}
+
+.tabela td {
+  padding: 11px 10px;
+  border-bottom: 1px solid var(--linha);
+  vertical-align: middle;
+}
+
+.tabela tr:last-child td { border-bottom: none; }
+.tabela tfoot td { font-weight: 600; border-top: 1px solid var(--linha); border-bottom: none; }
+
+.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.acoes { text-align: right; white-space: nowrap; }
+.acoes a { margin-left: 10px; font-size: 13px; text-decoration: none; }
+.acoes .excluir { color: var(--erro-tinta); }
+
+/* Pilula colorida que identifica a categoria nas listagens. */
+.pilula {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  color: var(--tinta-2);
+}
+
+.vazio {
+  text-align: center;
+  color: var(--tinta-3);
+  padding: 32px 16px;
+  font-size: 14px;
+}
+
+/* 11. Telas estreitas ----------------------------------------------------- */
+
+/* Ate 900px a lateral vira uma barra no topo: sem JS, sem menu sanfona. */
+@media (max-width: 900px) {
+  .lateral {
+    position: static;
+    width: auto;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 12px 20px;
+    border-right: none;
+    border-bottom: 1px solid var(--linha);
+  }
+
+  .lateral nav { flex-direction: row; gap: 6px; margin-right: auto; }
+  .lateral nav a.ativo { box-shadow: inset 0 -2px 0 var(--acento); }
+
+  /* Na horizontal o botao nao pode ocupar a linha inteira. */
+  .lateral .botao-largo { width: auto; margin-top: 0; }
+
+  .lateral-rodape {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+  }
+
+  .usuario-nome { margin-right: 0; }
+
+  .com-menu .conteudo { margin-left: 0; }
+  .conteudo { padding-top: 20px; }
+}
+
+@media (max-width: 700px) {
+  /* Sem o span, o tile-destaque criaria uma coluna a mais e estouraria a tela. */
+  .tile-destaque { grid-column: span 1; }
+  .tile-destaque .tile-valor { font-size: 32px; }
+
+  .filtros { flex-direction: column; align-items: stretch; }
+  .filtros input, .filtros select { width: 100%; }
+
+  .tabela { font-size: 13px; }
+  .tabela th, .tabela td { padding-left: 6px; padding-right: 6px; }
+}

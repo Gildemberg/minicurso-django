@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block titulo %}Confirmar exclusao{% endblock %}
+
+{% block conteudo %}
+
+<div class="cabecalho-pagina">
+  <h1>Confirmar exclusao</h1>
+</div>
+
+<div class="card">
+  <p>Tem certeza que deseja excluir {{ tipo }} <strong>{{ objeto }}</strong>?</p>
+  <p class="subtitulo">Essa acao nao pode ser desfeita.</p>
+
+  {# O DELETE de verdade acontece no POST - por isso um formulario, nao um link. #}
+  <form method="post">
+    {% csrf_token %}
+    <div class="acoes-form">
+      <button type="submit" class="botao botao-perigo">Sim, excluir</button>
+      <a class="botao" href="{% url voltar_para %}">Cancelar</a>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

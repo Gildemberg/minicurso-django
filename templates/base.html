@@ -1,0 +1,67 @@
+{% load static %}<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titulo %}Controle de Gastos{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/estilo.css' %}">
+</head>
+{% comment %}
+  A classe `com-menu` e o que abre espaco para a barra lateral. Na tela de
+  login nao existe menu, entao o conteudo ocupa a largura toda.
+
+  Repare que aqui usamos {% comment %} e nao {# #}: o {# #} so funciona em
+  UMA linha. Espalhado por duas, ele vira texto visivel na pagina.
+{% endcomment %}
+<body class="{% if request.user.is_authenticated %}com-menu{% endif %}">
+
+  {% comment %}
+    request.user existe em todo template gracas ao context processor
+    `django.contrib.auth.context_processors.auth`, que ja vem ligado.
+    Para quem nao esta logado, ele e um AnonymousUser.
+  {% endcomment %}
+  {% if request.user.is_authenticated %}
+    <aside class="lateral">
+      <a class="marca" href="{% url 'gastos:dashboard' %}">Controle de Gastos</a>
+
+      <a class="botao botao-primario botao-largo" href="{% url 'gastos:gasto_novo' %}">+ Novo gasto</a>
+
+      {% comment %}
+        request.resolver_match.url_name devolve o `name=` da URL atual
+        (definido em apps/gastos/urls.py). Marca o item ativo do menu.
+      {% endcomment %}
+      {% with atual=request.resolver_match.url_name %}
+      <nav>
+        <a href="{% url 'gastos:dashboard' %}" class="{% if atual == 'dashboard' %}ativo{% endif %}">Dashboard</a>
+        <a href="{% url 'gastos:gasto_lista' %}" class="{% if 'gasto' in atual %}ativo{% endif %}">Gastos</a>
+        <a href="{% url 'gastos:categoria_lista' %}" class="{% if 'categoria' in atual %}ativo{% endif %}">Categorias</a>
+      </nav>
+      {% endwith %}
+
+      <div class="lateral-rodape">
+        <span class="usuario-nome">{{ request.user.get_username }}</span>
+
+        {% comment %}
+          No Django 5 o logout SO aceita POST - por isso um formulario, e nao
+          um link. Um <a href="{% url 'logout' %}"> devolveria 405.
+        {% endcomment %}
+        <form method="post" action="{% url 'logout' %}">
+          {% csrf_token %}
+          <button type="submit" class="botao botao-pequeno">Sair</button>
+        </form>
+      </div>
+    </aside>
+  {% endif %}
+
+  <div class="conteudo">
+    <main class="container">
+      {% for mensagem in messages %}
+        <div class="mensagem {{ mensagem.tags }}">{{ mensagem }}</div>
+      {% endfor %}
+
+      {% block conteudo %}{% endblock %}
+    </main>
+  </div>
+
+</body>
+</html>
