@@ -24,6 +24,17 @@ class Categoria(models.Model):
         ('#eb6834', 'Laranja'),
     ]
 
+    # Conjunto que toda conta nova recebe. Sem categoria nao da para lancar
+    # gasto, entao uma conta vazia seria um beco sem saida.
+    PADROES = [
+        ('Alimentacao', '#2a78d6'),
+        ('Transporte', '#1baf7a'),
+        ('Moradia', '#eda100'),
+        ('Educacao', '#008300'),
+        ('Lazer', '#4a3aa7'),
+        ('Saude', '#e34948'),
+    ]
+
     # settings.AUTH_USER_MODEL em vez de importar User direto: assim o projeto
     # continua funcionando se um dia voce trocar o model de usuario.
     usuario = models.ForeignKey(
@@ -55,6 +66,18 @@ class Categoria(models.Model):
     def total_gasto(self):
         """Soma de todos os gastos desta categoria."""
         return self.gastos.aggregate(total=models.Sum('valor'))['total'] or 0
+
+    @classmethod
+    def criar_padroes_para(cls, usuario):
+        """Cria as categorias iniciais de um usuario. Devolve as criadas."""
+        criadas = []
+        for nome, cor in cls.PADROES:
+            categoria, nova = cls.objects.get_or_create(
+                usuario=usuario, nome=nome, defaults={'cor': cor},
+            )
+            if nova:
+                criadas.append(categoria)
+        return criadas
 
 
 class Gasto(models.Model):

@@ -10,8 +10,9 @@ fim de cada um, e desafios extras para quem terminar antes.
 
 > ### ⚠️ Leia antes: o repositório vai além da aula
 >
-> O código deste repositório é a versão **final e multiusuário** — com login e
-> com cada pessoa vendo só os próprios gastos.
+> O código deste repositório é a versão **final e multiusuário** — com criação
+> de conta, login, recuperação de senha por e-mail, e cada pessoa vendo só os
+> próprios gastos.
 >
 > **O roteiro constrói a versão de uma noite**, sem login, porque multiusuário
 > não cabe em 3h30 sem sacrificar o dashboard. Por isso alguns trechos de
@@ -779,12 +780,16 @@ deixe cada um escolher pelo próprio nível:
 
 ---
 
-# Apêndice A — Multiusuário e login
+# Apêndice A — Contas: login, cadastro e senha
 
 É o que separa "exercício de aula" de "sistema que dá para mostrar numa
-entrevista". **Não cabe nas 3h30** — são uns 40 minutos honestos e mexe em
-todas as views. Use como desafio de Nível 3, tarefa de casa ou segundo
-encontro. O repositório já está nesta versão; abaixo é o que muda.
+entrevista". **Não cabe nas 3h30** — o multiusuário são uns 40 minutos honestos
+e mexe em todas as views; cadastro e recuperação de senha somam uns 25. Use como
+desafio de Nível 3, tarefa de casa ou segundo encontro. O repositório já está
+nesta versão; abaixo é o que muda.
+
+Se você tiver um **segundo encontro**, este apêndice mais o Apêndice B (admin)
+dão umas 3 horas de conteúdo tranquilamente.
 
 ## A boa notícia: a autenticação já está pronta
 
@@ -932,6 +937,103 @@ formulário:
 ensina do jeito antigo — o aluno vai pesquisar, copiar o link, tomar 405 e não
 entender por quê.
 
+## Criar conta e recuperar senha pelo site
+
+O repositório traz os dois. É o que fecha o sistema: dá para usar sem nunca
+abrir o `/admin/`.
+
+### Cadastro
+
+Vive em `apps/contas/` — **o segundo app do projeto**, o que finalmente justifica
+a pasta `apps/` que criamos no Bloco 1. Ele não tem `models.py`: usuário e senha
+continuam sendo do `django.contrib.auth`.
+
+```python
+class CadastroForm(UserCreationForm):
+    email = forms.EmailField(required=True)
+
+    class Meta(UserCreationForm.Meta):
+        model = User
+        fields = ['username', 'email']
+```
+
+Herdar de `UserCreationForm` entrega de graça: os dois campos de senha, a
+conferência entre eles, o hash na gravação e a validação contra os
+`AUTH_PASSWORD_VALIDATORS` (tamanho mínimo, senha comum, senha só de números).
+**Teste com a senha `123456`** na frente da turma — o Django recusa com três
+motivos diferentes.
+
+Duas decisões que valem explicar:
+
+**E-mail obrigatório e único.** O `User` do Django aceita e-mail vazio e
+repetido. Se dois cadastros tiverem o mesmo e-mail, os dois recebem o link de
+recuperação e o dono do e-mail não sabe qual conta está redefinindo. Por isso
+existe um `clean_email` no form.
+
+**Conta nova recebe 6 categorias.** Sem isso a pessoa cai num beco sem saída:
+não há categoria, e o formulário de gasto exige uma. É o `Categoria.criar_padroes_para(usuario)`
+chamado na view. Bom momento para falar de primeira experiência de uso.
+
+### Recuperação de senha
+
+**As quatro views já existem** no `django.contrib.auth.urls`. O trabalho é só
+fornecer os templates e configurar o envio de e-mail:
+
+| Passo | Template |
+|---|---|
+| 1. pedir o e-mail | `password_reset_form.html` |
+| 2. "link enviado" | `password_reset_done.html` |
+| 3. definir a senha nova | `password_reset_confirm.html` |
+| 4. "senha alterada" | `password_reset_complete.html` |
+| o e-mail em si | `password_reset_email.html` + `password_reset_subject.txt` |
+
+E o envio, em `settings.py`:
+
+```python
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+```
+
+> **Esse é o truque que faz o bloco caber na aula.** O `console.EmailBackend`
+> não envia nada: ele **imprime o e-mail no terminal** do `runserver`. Você pede
+> a recuperação, aponta para o terminal, copia o link e continua. Zero
+> configuração de SMTP, zero senha de app do Gmail, funciona no Wi-Fi ruim da
+> faculdade.
+
+### A pegadinha boa: de quem é esse template?
+
+Antes de criar os templates, acesse `/contas/password_reset/`. **A página já
+funciona** — e aparece com a cara do Django admin, com o título "Site de
+administração do Django".
+
+Por quê? Porque o `django.contrib.admin` traz a própria pasta
+`templates/registration/`, com quase todos esses arquivos, para o reset de senha
+do admin funcionar. Como `APP_DIRS` está ligado, o Django acha os dele.
+
+Nossos arquivos ganham porque **`TEMPLATES['DIRS']` é consultado antes dos
+apps**. Vale mostrar com o comando:
+
+```bash
+python manage.py shell -c "from django.template.loader import get_template; print(get_template('registration/password_reset_form.html').origin.name)"
+```
+
+Rode antes e depois de criar o nosso arquivo. É a melhor demonstração de ordem
+de resolução de template que existe — e explica de uma vez por que `DIRS` e
+`APP_DIRS` são duas coisas separadas.
+
+### Três detalhes de segurança de graça
+
+O Django já faz certo, mas só quem repara aprende:
+
+1. **A tela "link enviado" aparece mesmo se o e-mail não existir.** É de
+   propósito: dizer "esse e-mail não está cadastrado" entregaria a um atacante
+   quais contas existem. Teste com um e-mail inventado.
+2. **O link vale uma vez só.** Depois de trocar a senha, abra o mesmo link de
+   novo — cai em "link inválido". O token embute o hash da senha atual, então
+   trocar a senha invalida o link.
+3. **Trocar senha logado exige a senha atual.** Diferente do fluxo de
+   recuperação. Pergunte à turma por quê, antes de responder: alguém que pegasse
+   o computador destravado tomaria a conta.
+
 ## Como demonstrar em aula (2 minutos)
 
 O comando `popular_dados` cria dois usuários, `ana` e `bruno`, cada um com as
@@ -944,6 +1046,30 @@ suas categorias e gastos (senha `senha-de-teste-123`).
 
 O passo 4 é o que fecha o raciocínio da noite: *o admin é a ferramenta do
 operador, o site é a do usuário — e os dois usam a mesma autenticação.*
+
+E se quiser esticar mais 2 minutos, com o fluxo completo:
+
+5. **Crie uma conta** pelo site, ao vivo, com o nome de um aluno → cai no
+   dashboard vazio, já logado, com as 6 categorias prontas
+6. **Peça recuperação de senha** para essa conta → mostre o e-mail aparecendo no
+   terminal e cole o link
+7. Depois de trocar a senha, **abra o mesmo link outra vez** → "link inválido"
+
+## Mais uma armadilha: apagar usuário
+
+`Gasto.categoria` é `PROTECT`, e isso tem um efeito colateral que só aparece
+aqui: **não dá para apagar um usuário em uma operação** se ele tiver gastos.
+Apagar o `User` tenta apagar as categorias dele, e o `PROTECT` vindo dos gastos
+bloqueia — mesmo que aqueles gastos fossem cair na mesma operação.
+
+O admin trata bem (mostra "objetos protegidos relacionados", não um erro 500). A
+ordem que funciona é gastos → categorias → usuário, que é exatamente o que uma
+tela de "excluir minha conta" faria.
+
+> Ótima pergunta para a turma: *"por que o Django não percebe que esses gastos
+> também iam ser apagados?"* Porque o coletor de exclusão resolve relação por
+> relação, sem cruzar o que já está na lista. É um bom empurrão para pensar em
+> ordem de operações no banco.
 
 ---
 

@@ -10,10 +10,13 @@ O passo a passo da aula está em **[ROTEIRO.md](ROTEIRO.md)**.
 
 ## O que o sistema faz
 
-- **Multiusuário** — cada pessoa entra com seu login e vê **apenas os próprios
-  gastos e categorias**. Usa o mesmo backend de autenticação do `/admin/`
-  (`ModelBackend`), mesma tabela de usuários, mesma sessão — só muda a porta
-  de entrada.
+- **Contas pelo front** — criar conta, entrar, sair, **recuperar senha por
+  e-mail** e trocar a senha, tudo em telas nossas. Nada disso passa pelo
+  `/admin/`, mas usa o mesmo backend de autenticação dele (`ModelBackend`),
+  mesma tabela de usuários e mesma sessão.
+- **Multiusuário** — cada pessoa vê **apenas os próprios gastos e categorias**.
+  Conta nova já nasce com 6 categorias prontas, para dar para lançar o
+  primeiro gasto sem configurar nada.
 - **Dashboard** — total do mês, média por lançamento, maior gasto e uma barra
   por categoria mostrando quanto cada uma representa.
 - **Gastos** — cadastrar, listar, editar e excluir, com busca por descrição e
@@ -54,8 +57,36 @@ python manage.py createsuperuser
 python manage.py runserver
 ```
 
-Abra **http://127.0.0.1:8000/** — você cai na tela de login. O admin fica em
-**/admin/**.
+Abra **http://127.0.0.1:8000/** — você cai na tela de login. Dali dá para
+**criar conta** ou **recuperar a senha**. O admin fica em **/admin/**.
+
+### Rotas de conta
+
+| URL | O que é |
+|---|---|
+| `/contas/login/` | entrar |
+| `/contas/cadastro/` | criar conta (nossa view, em `apps/contas/`) |
+| `/contas/password_reset/` | esqueci minha senha |
+| `/contas/password_change/` | trocar senha (logado) |
+| `/contas/logout/` | sair — **só aceita POST** |
+
+### Recuperação de senha em desenvolvimento
+
+O e-mail **não é enviado**: ele é impresso no terminal onde o `runserver` está
+rodando (`console.EmailBackend`). Peça a recuperação, olhe o terminal e copie o
+link. Nenhum servidor de e-mail para configurar.
+
+```
+Subject: Recuperacao de senha - Controle de Gastos
+To: ana@exemplo.com
+
+Olá, ana.
+...
+http://127.0.0.1:8000/contas/reset/MQ/dcsdsa-8f5726.../
+```
+
+Para enviar de verdade, troque `EMAIL_BACKEND` no `.env` — o `.env.example`
+tem o bloco de SMTP comentado.
 
 ### Usuários
 
@@ -91,6 +122,11 @@ config/                         CONFIGURAÇÃO do projeto — não é o sistema
 
 apps/                           TODOS os apps do sistema moram aqui
 ├── __init__.py                 faz o Python enxergar apps/ como pacote
+├── contas/                     criação de conta (não tem models)
+│   ├── apps.py
+│   ├── forms.py                CadastroForm, herda de UserCreationForm
+│   ├── urls.py
+│   └── views.py
 └── gastos/
     ├── apps.py                 name='apps.gastos' + label='gastos'
     ├── models.py               Categoria e Gasto  → viram tabelas no banco
@@ -103,8 +139,20 @@ apps/                           TODOS os apps do sistema moram aqui
         └── popular_dados.py    gera dados de exemplo
 
 templates/                      o HTML, fora dos apps
-├── base.html                   layout comum (menu, mensagens)
-└── gastos/                     uma página por template
+├── base.html                   layout comum (menu lateral, mensagens)
+├── gastos/                     uma página por template
+└── registration/               telas de conta — o nome da pasta é obrigatório
+    ├── base_conta.html         cartão centralizado das telas de conta
+    ├── login.html
+    ├── cadastro.html
+    ├── password_reset_form.html        1. pede o e-mail
+    ├── password_reset_done.html        2. "link enviado"
+    ├── password_reset_email.html       o corpo do e-mail
+    ├── password_reset_subject.txt      o assunto do e-mail
+    ├── password_reset_confirm.html     3. define a senha nova
+    ├── password_reset_complete.html    4. "senha alterada"
+    ├── password_change_form.html
+    └── password_change_done.html
 
 static/css/estilo.css           CSS puro, sem framework
 ```
@@ -138,6 +186,29 @@ faz o **Django rejeitar** o valor na validação.
 > O `usuario` **não está** no `fields` do formulário, de propósito. O dono é
 > definido na view com `form.save(commit=False)`. Campo de dono nunca vem do
 > cliente.
+
+### Um efeito colateral do `PROTECT` que vale conhecer
+
+`Gasto.categoria` usa `on_delete=PROTECT` para ninguém apagar uma categoria em
+uso e destruir o histórico junto. A consequência não óbvia: **não dá para
+apagar um usuário em uma única operação** se ele tiver gastos.
+
+O motivo é a ordem em que o Django resolve o cascata: apagar o `User` tenta
+apagar as `Categoria` dele, e aí o `PROTECT` vindo de `Gasto` bloqueia — mesmo
+que aqueles gastos também fossem ser apagados na mesma operação.
+
+Não é um bug, e o admin trata bem: mostra uma página de "objetos protegidos
+relacionados", não um erro 500. Para apagar de fato, vá na ordem:
+
+```python
+Gasto.objects.filter(usuario=u).delete()
+Categoria.objects.filter(usuario=u).delete()
+u.delete()
+```
+
+É exatamente o que uma tela de "excluir minha conta" faria. Se você preferir
+que apagar o usuário leve tudo embora de uma vez, troque `Gasto.categoria` para
+`on_delete=CASCADE` — mas aí perde a proteção contra apagar categoria em uso.
 
 > **Atenção ao criar um app novo:** o `startapp` não sabe da pasta `apps/`.
 > ```bash

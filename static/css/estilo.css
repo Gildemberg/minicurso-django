@@ -128,9 +128,17 @@ h2 { font-size: 17px; font-weight: 600; margin: 0 0 16px; }
   padding-top: 16px;
   border-top: 1px solid var(--linha);
   display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.lateral-acoes {
+  display: flex;
   align-items: center;
   gap: 10px;
 }
+
+.lateral-acoes a { font-size: 13px; margin-right: auto; }
 
 /* Area de conteudo, ao lado da barra. */
 .conteudo { padding: 28px 0; }
@@ -207,10 +215,10 @@ h2 { font-size: 17px; font-weight: 600; margin: 0 0 16px; }
 
 .lateral-rodape form { margin: 0; }
 
-/* 5.2 Tela de login ------------------------------------------------------- */
-.caixa-login {
-  max-width: 380px;
-  margin: 48px auto;
+/* 5.2 Telas de conta (entrar, cadastrar, recuperar senha) ------------------ */
+.caixa-conta {
+  max-width: 400px;
+  margin: 40px auto;
   background: var(--superficie);
   border: 1px solid var(--borda);
   border-radius: var(--raio);
@@ -218,8 +226,26 @@ h2 { font-size: 17px; font-weight: 600; margin: 0 0 16px; }
   padding: 28px;
 }
 
-.caixa-login h1 { font-size: 20px; }
-.caixa-login .subtitulo { margin-bottom: 22px; }
+.caixa-conta h1 { font-size: 20px; }
+.caixa-conta .subtitulo { margin-bottom: 22px; }
+.caixa-conta .mensagem { margin-top: 18px; }
+.caixa-conta code {
+  background: var(--plano);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.conta-rodape {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px solid var(--linha);
+  font-size: 13px;
+  color: var(--tinta-2);
+}
 
 /* 6. Mensagens (django.contrib.messages) ---------------------------------- */
 .mensagem {

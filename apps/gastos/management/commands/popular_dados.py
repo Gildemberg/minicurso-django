@@ -20,15 +20,8 @@ from apps.gastos.models import Categoria, Gasto
 USUARIOS = ['ana', 'bruno']
 SENHA_EXEMPLO = 'senha-de-teste-123'
 
-CATEGORIAS = [
-    ('Alimentacao', '#2a78d6'),
-    ('Transporte', '#1baf7a'),
-    ('Moradia', '#eda100'),
-    ('Educacao', '#008300'),
-    ('Lazer', '#4a3aa7'),
-    ('Saude', '#e34948'),
-]
-
+# As categorias sao as mesmas que toda conta nova recebe (Categoria.PADROES),
+# para nao ter duas listas para manter em sincronia.
 DESCRICOES = {
     'Alimentacao': [('Almoco no RU', 8, 18), ('Mercado', 90, 320), ('Lanche', 12, 35),
                     ('Cafe', 6, 15), ('Delivery', 30, 80)],
@@ -89,12 +82,15 @@ class Command(BaseCommand):
 
     def _popular_para(self, usuario):
         """Cria as categorias e os gastos de UM usuario."""
-        categorias = {}
-        for nome, cor in CATEGORIAS:
-            categoria, _ = Categoria.objects.get_or_create(
-                usuario=usuario, nome=nome, defaults={'cor': cor},
-            )
-            categorias[nome] = categoria
+        Categoria.criar_padroes_para(usuario)
+
+        # So as categorias para as quais temos descricoes de exemplo: se o
+        # usuario tiver criado outras, elas ficam de fora em vez de dar erro.
+        categorias = {
+            c.nome: c
+            for c in Categoria.objects.filter(usuario=usuario)
+            if c.nome in DESCRICOES
+        }
 
         hoje = timezone.localdate()
         criados = 0

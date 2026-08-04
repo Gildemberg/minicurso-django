@@ -41,14 +41,18 @@
       <div class="lateral-rodape">
         <span class="usuario-nome">{{ request.user.get_username }}</span>
 
-        {% comment %}
-          No Django 5 o logout SO aceita POST - por isso um formulario, e nao
-          um link. Um <a href="{% url 'logout' %}"> devolveria 405.
-        {% endcomment %}
-        <form method="post" action="{% url 'logout' %}">
-          {% csrf_token %}
-          <button type="submit" class="botao botao-pequeno">Sair</button>
-        </form>
+        <div class="lateral-acoes">
+          <a href="{% url 'password_change' %}">Trocar senha</a>
+
+          {% comment %}
+            No Django 5 o logout SO aceita POST - por isso um formulario, e nao
+            um link. Um <a href="{% url 'logout' %}"> devolveria 405.
+          {% endcomment %}
+          <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="botao botao-pequeno">Sair</button>
+          </form>
+        </div>
       </div>
     </aside>
   {% endif %}

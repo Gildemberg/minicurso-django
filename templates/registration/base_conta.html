@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% comment %}
+  Base das telas de conta (entrar, cadastrar, recuperar senha). Todas sao um
+  cartao estreito e centralizado, entao o layout fica aqui uma vez so.
+
+  Heranca em dois niveis: base.html -> base_conta.html -> a pagina.
+  Cada nivel resolve um pedaco do problema.
+{% endcomment %}
+
+{% block conteudo %}
+<div class="caixa-conta">
+  {% block conta %}{% endblock %}
+</div>
+{% endblock %}

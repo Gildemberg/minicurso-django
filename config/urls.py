@@ -15,8 +15,12 @@ admin.site.index_title = 'Administracao do sistema'
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    # Login, logout, troca e reset de senha - tudo pronto, so faltam os
-    # templates. Usa o MESMO backend de autenticacao do admin.
+    # Nossas telas de conta (cadastro). Vem ANTES do include do contrib.auth
+    # para poder sobrescrever alguma rota dele se um dia for preciso.
+    path('contas/', include('apps.contas.urls')),
+
+    # Login, logout, troca e reset de senha - as views ja vem prontas, so
+    # fornecemos os templates. Usa o MESMO backend de autenticacao do admin.
     # Atencao: os templates vao em templates/registration/, e nao em contas/.
     path('contas/', include('django.contrib.auth.urls')),
 
