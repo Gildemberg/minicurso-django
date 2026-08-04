@@ -43,7 +43,6 @@ THIRD_PARTY_APPS = []
 # Nossos apps: todos moram dentro da pasta apps/.
 LOCAL_APPS = [
     'apps.gastos',
-    'apps.contas',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -111,27 +110,10 @@ LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'gastos:dashboard'
 LOGOUT_REDIRECT_URL = 'login'
 
-
-# ---------------------------------------------------------------------------
-# E-mail (usado pela recuperacao de senha)
-# ---------------------------------------------------------------------------
-# O padrao imprime o e-mail no TERMINAL em vez de enviar. E o ideal para
-# desenvolvimento e para a aula: o link de redefinir senha aparece no console,
-# sem precisar configurar servidor de e-mail nenhum.
-#
-# Em producao, troque no .env para:
-#   EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
-# e preencha EMAIL_HOST, EMAIL_PORT, EMAIL_HOST_USER e EMAIL_HOST_PASSWORD.
-EMAIL_BACKEND = env('EMAIL_BACKEND', default='django.core.mail.backends.console.EmailBackend')
-EMAIL_HOST = env('EMAIL_HOST', default='')
-EMAIL_PORT = env.int('EMAIL_PORT', default=587)
-EMAIL_USE_TLS = env.bool('EMAIL_USE_TLS', default=True)
-EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='')
-EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default='')
-DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='nao-responda@controlegastos.local')
-
-# Validade do link de redefinicao de senha, em segundos (aqui: 2 horas).
-PASSWORD_RESET_TIMEOUT = 60 * 60 * 2
+# Nao ha recuperacao de senha por e-mail neste projeto, entao nao existe
+# configuracao de EMAIL_* aqui. Quem esquece a senha pede para o
+# administrador trocar no /admin/, ou usa:
+#   python manage.py changepassword <usuario>
 
 
 # ---------------------------------------------------------------------------

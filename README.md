@@ -10,13 +10,10 @@ O passo a passo da aula está em **[ROTEIRO.md](ROTEIRO.md)**.
 
 ## O que o sistema faz
 
-- **Contas pelo front** — criar conta, entrar, sair, **recuperar senha por
-  e-mail** e trocar a senha, tudo em telas nossas. Nada disso passa pelo
-  `/admin/`, mas usa o mesmo backend de autenticação dele (`ModelBackend`),
-  mesma tabela de usuários e mesma sessão.
-- **Multiusuário** — cada pessoa vê **apenas os próprios gastos e categorias**.
-  Conta nova já nasce com 6 categorias prontas, para dar para lançar o
-  primeiro gasto sem configurar nada.
+- **Multiusuário** — cada pessoa entra pela nossa tela de login e vê **apenas
+  os próprios gastos e categorias**. Usa o mesmo backend de autenticação do
+  `/admin/` (`ModelBackend`), mesma tabela de usuários, mesma sessão — só muda
+  a porta de entrada.
 - **Dashboard** — total do mês, média por lançamento, maior gasto e uma barra
   por categoria mostrando quanto cada uma representa.
 - **Gastos** — cadastrar, listar, editar e excluir, com busca por descrição e
@@ -57,36 +54,31 @@ python manage.py createsuperuser
 python manage.py runserver
 ```
 
-Abra **http://127.0.0.1:8000/** — você cai na tela de login. Dali dá para
-**criar conta** ou **recuperar a senha**. O admin fica em **/admin/**.
+Abra **http://127.0.0.1:8000/** — você cai na tela de login. O admin fica em
+**/admin/**.
 
 ### Rotas de conta
 
 | URL | O que é |
 |---|---|
 | `/contas/login/` | entrar |
-| `/contas/cadastro/` | criar conta (nossa view, em `apps/contas/`) |
-| `/contas/password_reset/` | esqueci minha senha |
-| `/contas/password_change/` | trocar senha (logado) |
 | `/contas/logout/` | sair — **só aceita POST** |
+| `/contas/senha/` | trocar a senha (precisa estar logado) |
 
-### Recuperação de senha em desenvolvimento
+**Não há criação de conta nem recuperação de senha por e-mail.** Usuários são
+criados pelo administrador, no `/admin/` ou por linha de comando:
 
-O e-mail **não é enviado**: ele é impresso no terminal onde o `runserver` está
-rodando (`console.EmailBackend`). Peça a recuperação, olhe o terminal e copie o
-link. Nenhum servidor de e-mail para configurar.
-
-```
-Subject: Recuperacao de senha - Controle de Gastos
-To: ana@exemplo.com
-
-Olá, ana.
-...
-http://127.0.0.1:8000/contas/reset/MQ/dcsdsa-8f5726.../
+```bash
+python manage.py createsuperuser          # cria um administrador
+python manage.py changepassword <usuario> # troca a senha de alguém
 ```
 
-Para enviar de verdade, troque `EMAIL_BACKEND` no `.env` — o `.env.example`
-tem o bloco de SMTP comentado.
+> As rotas de autenticação são declaradas **uma por uma** em `config/urls.py`,
+> e não com `include('django.contrib.auth.urls')`. Isso é de propósito: aquele
+> include registraria também as quatro rotas de "esqueci minha senha", que
+> passariam a funcionar sozinhas — com o visual do admin e sem e-mail
+> configurado — porque o `django.contrib.admin` traz templates próprios em
+> `registration/`. Listando só o que queremos, essas rotas dão 404.
 
 ### Usuários
 
@@ -122,11 +114,6 @@ config/                         CONFIGURAÇÃO do projeto — não é o sistema
 
 apps/                           TODOS os apps do sistema moram aqui
 ├── __init__.py                 faz o Python enxergar apps/ como pacote
-├── contas/                     criação de conta (não tem models)
-│   ├── apps.py
-│   ├── forms.py                CadastroForm, herda de UserCreationForm
-│   ├── urls.py
-│   └── views.py
 └── gastos/
     ├── apps.py                 name='apps.gastos' + label='gastos'
     ├── models.py               Categoria e Gasto  → viram tabelas no banco
@@ -144,13 +131,6 @@ templates/                      o HTML, fora dos apps
 └── registration/               telas de conta — o nome da pasta é obrigatório
     ├── base_conta.html         cartão centralizado das telas de conta
     ├── login.html
-    ├── cadastro.html
-    ├── password_reset_form.html        1. pede o e-mail
-    ├── password_reset_done.html        2. "link enviado"
-    ├── password_reset_email.html       o corpo do e-mail
-    ├── password_reset_subject.txt      o assunto do e-mail
-    ├── password_reset_confirm.html     3. define a senha nova
-    ├── password_reset_complete.html    4. "senha alterada"
     ├── password_change_form.html
     └── password_change_done.html
 

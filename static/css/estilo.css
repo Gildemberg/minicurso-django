@@ -229,12 +229,6 @@ h2 { font-size: 17px; font-weight: 600; margin: 0 0 16px; }
 .caixa-conta h1 { font-size: 20px; }
 .caixa-conta .subtitulo { margin-bottom: 22px; }
 .caixa-conta .mensagem { margin-top: 18px; }
-.caixa-conta code {
-  background: var(--plano);
-  padding: 1px 5px;
-  border-radius: 4px;
-  font-size: 13px;
-}
 
 .conta-rodape {
   display: flex;
