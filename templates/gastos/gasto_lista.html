@@ -9,6 +9,19 @@
 </div>
 
 <div class="card">
+  {# method="get" faz a busca virar parametro na URL - da para compartilhar o link. #}
+  <form method="get" class="filtros">
+    <div class="campo">
+      <label for="busca">Buscar</label>
+      <input type="search" id="busca" name="busca" value="{{ busca }}" placeholder="Descricao...">
+    </div>
+
+    <button type="submit" class="botao">Buscar</button>
+    <a class="botao" href="{% url 'gastos:gasto_lista' %}">Limpar</a>
+  </form>
+</div>
+
+<div class="card">
   <table class="tabela">
     <thead>
       <tr>

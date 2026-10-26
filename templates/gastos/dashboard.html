@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load l10n %}
+
+{% block titulo %}Dashboard - Controle de Gastos{% endblock %}
+
+{% block conteudo %}
+
+<div class="cabecalho-pagina">
+  <div>
+    <h1>Resumo de {{ hoje|date:"F \d\e Y" }}</h1>
+    <p class="subtitulo">Quanto voce gastou e com o que.</p>
+  </div>
+</div>
+
+<div class="tiles">
+  <div class="tile tile-destaque">
+    <div class="tile-rotulo">Total do mes</div>
+    <div class="tile-valor">R$ {{ total|floatformat:2 }}</div>
+  </div>
+
+  <div class="tile">
+    <div class="tile-rotulo">Categorias usadas</div>
+    <div class="tile-valor">{{ por_categoria|length }}</div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>Gasto por categoria</h2>
+
+  {% for item in por_categoria %}
+    <div class="barra-linha">
+      <div class="barra-topo">
+        <span class="barra-nome">
+          <span class="marcador" style="background: {{ item.cor }}"></span>
+          {{ item.nome }}
+        </span>
+        <span>
+          <span class="barra-valor">R$ {{ item.total|floatformat:2 }}</span>
+          <span class="barra-percentual">{{ item.quantidade }} lancamento{{ item.quantidade|pluralize }} &middot; {{ item.percentual }}%</span>
+        </span>
+      </div>
+      <div class="barra-trilho">
+        {# A largura da barra e o percentual calculado na view. O |unlocalize #}
+        {# mantem o ponto decimal (99.2): o CSS nao entende "99,2%". #}
+        <div class="barra-preenchimento"
+             style="width: {{ item.percentual|unlocalize }}%; background: {{ item.cor }}"></div>
+      </div>
+    </div>
+  {% empty %}
+    <p class="vazio">Nenhum gasto lancado neste mes.</p>
+  {% endfor %}
+</div>
+
+{% endblock %}

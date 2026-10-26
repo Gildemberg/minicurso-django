@@ -9,7 +9,7 @@
 <body class="com-menu">
 
   <aside class="lateral">
-    <a class="marca" href="{% url 'gastos:gasto_lista' %}">Controle de Gastos</a>
+    <a class="marca" href="{% url 'gastos:dashboard' %}">Controle de Gastos</a>
 
     <a class="botao botao-primario botao-largo" href="{% url 'gastos:gasto_novo' %}">+ Novo gasto</a>
 
@@ -19,6 +19,7 @@
     {% endcomment %}
     {% with atual=request.resolver_match.url_name %}
     <nav>
+      <a href="{% url 'gastos:dashboard' %}" class="{% if atual == 'dashboard' %}ativo{% endif %}">Dashboard</a>
       <a href="{% url 'gastos:gasto_lista' %}" class="{% if 'gasto' in atual %}ativo{% endif %}">Gastos</a>
       <a href="{% url 'gastos:categoria_lista' %}" class="{% if 'categoria' in atual %}ativo{% endif %}">Categorias</a>
       <a href="/admin/">Admin</a>
