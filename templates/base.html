@@ -11,6 +11,8 @@
   <aside class="lateral">
     <a class="marca" href="{% url 'gastos:gasto_lista' %}">Controle de Gastos</a>
 
+    <a class="botao botao-primario botao-largo" href="{% url 'gastos:gasto_novo' %}">+ Novo gasto</a>
+
     {% comment %}
       request.resolver_match.url_name devolve o `name=` da URL atual
       (definido em gastos/urls.py). Marca o item ativo do menu.

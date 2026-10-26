@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block titulo %}Gasto - Controle de Gastos{% endblock %}
+
+{% block conteudo %}
+
+<div class="cabecalho-pagina">
+  {# form.instance.pk so existe quando estamos editando um gasto que ja existe. #}
+  <h1>{% if form.instance.pk %}Editar gasto{% else %}Novo gasto{% endif %}</h1>
+</div>
+
+<div class="card">
+  {# Sem `action`, o formulario envia para a propria URL. #}
+  <form method="post" novalidate>
+    {# Obrigatorio em todo POST: protege contra CSRF. Sem ele o Django devolve 403. #}
+    {% csrf_token %}
+
+    {% include 'gastos/_form_campos.html' %}
+
+    <div class="acoes-form">
+      <button type="submit" class="botao botao-primario">Salvar</button>
+      <a class="botao" href="{% url 'gastos:gasto_lista' %}">Cancelar</a>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

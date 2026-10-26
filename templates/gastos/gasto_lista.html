@@ -16,6 +16,7 @@
         <th>Descricao</th>
         <th>Categoria</th>
         <th class="num">Valor</th>
+        <th></th>
       </tr>
     </thead>
     <tbody>
@@ -30,9 +31,13 @@
             </span>
           </td>
           <td class="num">R$ {{ gasto.valor|floatformat:2 }}</td>
+          <td class="acoes">
+            <a href="{% url 'gastos:gasto_editar' gasto.pk %}">Editar</a>
+            <a class="excluir" href="{% url 'gastos:gasto_excluir' gasto.pk %}">Excluir</a>
+          </td>
         </tr>
       {% empty %}
-        <tr><td colspan="4" class="vazio">Nenhum gasto ainda.</td></tr>
+        <tr><td colspan="5" class="vazio">Nenhum gasto ainda.</td></tr>
       {% endfor %}
     </tbody>
   </table>
