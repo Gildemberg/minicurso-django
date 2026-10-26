@@ -17,7 +17,8 @@
     {% csrf_token %}
     <div class="acoes-form">
       <button type="submit" class="botao botao-perigo">Sim, excluir</button>
-      <a class="botao" href="{% url 'gastos:gasto_lista' %}">Cancelar</a>
+      {# voltar_para vem da view; sem ele, volta para a lista de gastos. #}
+      <a class="botao" href="{% url voltar_para|default:'gastos:gasto_lista' %}">Cancelar</a>
     </div>
   </form>
 </div>

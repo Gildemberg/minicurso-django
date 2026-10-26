@@ -20,6 +20,7 @@
     {% with atual=request.resolver_match.url_name %}
     <nav>
       <a href="{% url 'gastos:gasto_lista' %}" class="{% if 'gasto' in atual %}ativo{% endif %}">Gastos</a>
+      <a href="{% url 'gastos:categoria_lista' %}" class="{% if 'categoria' in atual %}ativo{% endif %}">Categorias</a>
       <a href="/admin/">Admin</a>
     </nav>
     {% endwith %}
@@ -27,6 +28,11 @@
 
   <div class="conteudo">
     <main class="container">
+      {# Mensagens do messages.success / messages.error das views. #}
+      {% for mensagem in messages %}
+        <div class="mensagem {{ mensagem.tags }}">{{ mensagem }}</div>
+      {% endfor %}
+
       {% block conteudo %}{% endblock %}
     </main>
   </div>
