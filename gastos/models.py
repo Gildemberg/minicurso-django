@@ -19,6 +19,7 @@ class Gasto(models.Model):
         on_delete=models.PROTECT,
         related_name='gastos',
     )
+    observacao = models.TextField(blank=True)
 
     class Meta:
         ordering = ['-data', '-id']

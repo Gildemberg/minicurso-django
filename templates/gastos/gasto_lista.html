@@ -36,7 +36,10 @@
       {% for gasto in gastos %}
         <tr>
           <td class="num">{{ gasto.data|date:"d/m/Y" }}</td>
-          <td>{{ gasto.descricao }}</td>
+          <td>
+            {{ gasto.descricao }}
+            {% if gasto.observacao %}<div class="subtitulo">{{ gasto.observacao|truncatechars:60 }}</div>{% endif %}
+          </td>
           <td>
             <span class="pilula">
               <span class="marcador" style="background: {{ gasto.categoria.cor }}"></span>

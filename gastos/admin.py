@@ -1,7 +1,11 @@
 from django.contrib import admin
 from .models import Categoria, Gasto
 
-admin.site.register(Categoria)
+@admin.register(Categoria)
+class CategoriaAdmin(admin.ModelAdmin):
+    list_display = ['nome', 'cor']
+    ordering = ['nome']
+    list_per_page = 20
 
 
 @admin.register(Gasto)

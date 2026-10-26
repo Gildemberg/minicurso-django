@@ -5,9 +5,10 @@ from .models import Categoria, Gasto
 class GastoForm(forms.ModelForm):
     class Meta:
         model = Gasto
-        fields = ['descricao', 'valor', 'data', 'categoria']
+        fields = ['descricao', 'valor', 'data', 'categoria', 'observacao']
         widgets = {
             'data': forms.DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
+            'observacao': forms.Textarea(attrs={'rows': 3}),
         }
 
 
