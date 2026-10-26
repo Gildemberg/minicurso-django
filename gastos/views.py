@@ -1,3 +1,7 @@
 from django.shortcuts import render
+from .models import Gasto
 
-# Create your views here.
+
+def gasto_lista(request):
+    gastos = Gasto.objects.select_related('categoria')
+    return render(request, 'gastos/gasto_lista.html', {'gastos': gastos})

@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block titulo %}Gastos - Controle de Gastos{% endblock %}
+
+{% block conteudo %}
+
+<div class="cabecalho-pagina">
+  <h1>Meus gastos</h1>
+</div>
+
+<div class="card">
+  <table class="tabela">
+    <thead>
+      <tr>
+        <th>Data</th>
+        <th>Descricao</th>
+        <th>Categoria</th>
+        <th class="num">Valor</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for gasto in gastos %}
+        <tr>
+          <td class="num">{{ gasto.data|date:"d/m/Y" }}</td>
+          <td>{{ gasto.descricao }}</td>
+          <td>
+            <span class="pilula">
+              <span class="marcador" style="background: {{ gasto.categoria.cor }}"></span>
+              {{ gasto.categoria.nome }}
+            </span>
+          </td>
+          <td class="num">R$ {{ gasto.valor|floatformat:2 }}</td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="4" class="vazio">Nenhum gasto ainda.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

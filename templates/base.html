@@ -1,0 +1,33 @@
+{% load static %}<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titulo %}Controle de Gastos{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/estilo.css' %}">
+</head>
+<body class="com-menu">
+
+  <aside class="lateral">
+    <a class="marca" href="{% url 'gastos:gasto_lista' %}">Controle de Gastos</a>
+
+    {% comment %}
+      request.resolver_match.url_name devolve o `name=` da URL atual
+      (definido em gastos/urls.py). Marca o item ativo do menu.
+    {% endcomment %}
+    {% with atual=request.resolver_match.url_name %}
+    <nav>
+      <a href="{% url 'gastos:gasto_lista' %}" class="{% if 'gasto' in atual %}ativo{% endif %}">Gastos</a>
+      <a href="/admin/">Admin</a>
+    </nav>
+    {% endwith %}
+  </aside>
+
+  <div class="conteudo">
+    <main class="container">
+      {% block conteudo %}{% endblock %}
+    </main>
+  </div>
+
+</body>
+</html>
